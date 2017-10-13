@@ -11,12 +11,13 @@ public class JavaTextArea extends JFrame {
     private JMenu file;
     private JMenuItem option;
     private JMenuItem about;
-    private JTextField groupName;
+    private JTextField groupName, passwordOptionField,passwordlengthField ;
     private JTextArea textArea;
     private JButton button;
     private JLabel grouplabel, textAreaLabel, label;
     private String login, temp, lastName, nameWithFatherName;
     private String OU = "\n\"OU=TEMP,OU=Students,DC=inyaz,DC=uz\"";
+    private String passwordOption;
 
 
     public JavaTextArea() {
@@ -29,11 +30,10 @@ public class JavaTextArea extends JFrame {
         option = new JMenuItem("Option");
         file.add(option);
         about = new JMenuItem("About");
-        file.add(option)
+        file.add(about);
         MyMenuEvent myMenuEvent = new MyMenuEvent();
         option.addActionListener(myMenuEvent);
         about.addActionListener(myMenuEvent);
-
 
 
         grouplabel = new JLabel("Group name");
@@ -66,8 +66,21 @@ public class JavaTextArea extends JFrame {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-
+            if (e.getSource() == about) {
+                showAbout();
+            } else if (e.getSource() == option) {
+                setPasswordOption();
+            }
         }
+    }
+
+    private void showAbout() {
+        JOptionPane.showMessageDialog(null, "This application created by Razakov Azamat", "About me", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private void setPasswordOption() {
+        passwordOption = JOptionPane.showInputDialog(null,
+                "Defining a Character Set:");
     }
 
     public class MyEvent implements ActionListener {
@@ -118,8 +131,15 @@ public class JavaTextArea extends JFrame {
         gui.setVisible(true);
     }
 
-    protected static String getSaltString() {
-        String SALTCHARS = "ABCDEF1234567890";
+
+    private String getSaltString() {
+        String SALTCHARS;
+        if (passwordOption == null) {
+            SALTCHARS = "ABCDEF123456789";
+        } else {
+            SALTCHARS = passwordOption;
+        }
+
         StringBuilder salt = new StringBuilder();
         Random random = new Random();
         while (salt.length() < 8) {
@@ -129,6 +149,7 @@ public class JavaTextArea extends JFrame {
         String saltStr = salt.toString();
         return saltStr;
     }
+
 
     protected String getLogin(String line) {
         String[] arr = line.split(" ");
