@@ -98,8 +98,8 @@ public class JavaTextArea extends JFrame {
                     writer.print("OU,CN,GivenName,Initials,SN,DisplayName,SamAccountName,OfficeName,Description,eMail,StreetAddress,L,PostalCode,CO,UPN,Company,Department,ID,Title,Phone,Manager,Password\n");
                     for (String line : textArea.getText().split("\\n")) {
                         line = line.replaceAll("’", "'");
-                        line = line.replaceAll("  ", "");
-                        line = line.replaceAll("   ", "");
+                        line = line.replaceAll("\\s{2,}", " ").trim();
+
                         String login = getLogin(line);
                         String password = getSaltString();
 
