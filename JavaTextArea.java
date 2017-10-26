@@ -11,9 +11,9 @@ public class JavaTextArea extends JFrame {
     private JMenu file;
     private JMenuItem option;
     private JMenuItem about;
-    private JTextField groupName, passwordOptionField,passwordlengthField ;
+    private JTextField groupName, passwordOptionField, passwordlengthField;
     private JTextArea textArea;
-    private JButton button;
+    private JButton button, clearButton;
     private JLabel grouplabel, textAreaLabel, label;
     private String login, temp, lastName, nameWithFatherName;
     private String OU = "\n\"OU=TEMP,OU=Students,DC=inyaz,DC=uz\"";
@@ -52,6 +52,9 @@ public class JavaTextArea extends JFrame {
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         add(scroll);
 
+        clearButton = new JButton("Clear");
+        add(clearButton);
+
         button = new JButton("Generate");
         add(button);
 
@@ -60,6 +63,7 @@ public class JavaTextArea extends JFrame {
 
         MyEvent e = new MyEvent();
         button.addActionListener(e);
+        clearButton.addActionListener(e);
     }
 
     public class MyMenuEvent implements ActionListener {
@@ -88,34 +92,40 @@ public class JavaTextArea extends JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
 
-            String text = textArea.getText();
-            if (text.equals("")) {
-                label.setText("Please enter some text");
+            if (e.getSource() == clearButton) {
+                groupName.setText("");
+                textArea.setText("");
             } else {
-                try {
-                    PrintWriter writer = new PrintWriter("import_users.csv", "UTF-8");
-                    PrintWriter writerLoginPassword = new PrintWriter(getGroupName() + ".txt", "UTF-8");
-                    writer.print("OU,CN,GivenName,Initials,SN,DisplayName,SamAccountName,OfficeName,Description,eMail,StreetAddress,L,PostalCode,CO,UPN,Company,Department,ID,Title,Phone,Manager,Password\n");
-                    for (String line : textArea.getText().split("\\n")) {
-                        line = line.replaceAll("’", "'");
-                        line = line.replaceAll("  ", "");
-                        line = line.replaceAll("   ", "");
-                        String login = getLogin(line);
-                        String password = getSaltString();
 
-                        if (getGroupName().equals("null")) {
-                            JOptionPane.showMessageDialog(null, "Please enter group name!");
-                            break;
-                        } else {
-                            writer.print(OU + "," + login + "," + getNameFatherName(line) + getLastName(line) + line + "," + login + ",," + getGroupName() + ", " + getEmail(login) + ",,,,," + getSecondEmail(login) + ",,,,,,," + password);
-                            writerLoginPassword.println(line + " Login: " + login + " Password: " + password);
+                String text = textArea.getText();
+                if (text.equals("")) {
+                    label.setText("Please enter some text");
+                } else {
+                    try {
+                        PrintWriter writer = new PrintWriter("import_users.csv", "UTF-8");
+                        PrintWriter writerLoginPassword = new PrintWriter(getGroupName() + ".txt", "UTF-8");
+                        writer.print("OU,CN,GivenName,Initials,SN,DisplayName,SamAccountName,OfficeName,Description,eMail,StreetAddress,L,PostalCode,CO,UPN,Company,Department,ID,Title,Phone,Manager,Password\n");
+                        for (String line : textArea.getText().split("\\n")) {
+                            line = line.replaceAll("’", "'");
+                            line = line.replaceAll("\\s{2,}", " ").trim();
+
+                            String login = getLogin(line);
+                            String password = getSaltString();
+
+                            if (getGroupName().equals("null")) {
+                                JOptionPane.showMessageDialog(null, "Please enter group name!");
+                                break;
+                            } else {
+                                writer.print(OU + "," + login + "," + getNameFatherName(line) + getLastName(line) + line + "," + login + ",," + getGroupName() + ", " + getEmail(login) + ",,,,," + getSecondEmail(login) + ",,,,,,," + password);
+                                writerLoginPassword.println(line + " Login: " + login + " Password: " + password);
+                            }
                         }
+                        writerLoginPassword.close();
+                        writer.close();
+                        JOptionPane.showMessageDialog(null, "You CSV genereted!");
+                    } catch (IOException ex) {
+                        System.out.println("Error");
                     }
-                    writerLoginPassword.close();
-                    writer.close();
-                    JOptionPane.showMessageDialog(null, "You CSV genereted!");
-                } catch (IOException ex) {
-                    System.out.println("Error");
                 }
             }
         }
