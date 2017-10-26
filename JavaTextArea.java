@@ -119,6 +119,25 @@ public class JavaTextArea extends JFrame {
                                 writer.print(OU + "," + login + "," + getNameFatherName(line) + getLastName(line) + line + "," + login + ",," + getGroupName() + ", " + getEmail(login) + ",,,,," + getSecondEmail(login) + ",,,,,,," + password);
                                 writerLoginPassword.println(line + " Login: " + login + " Password: " + password);
                             }
+
+                try {
+                    PrintWriter writer = new PrintWriter("import_users.csv", "UTF-8");
+                    PrintWriter writerLoginPassword = new PrintWriter(getGroupName() + ".txt", "UTF-8");
+                    writer.print("OU,CN,GivenName,Initials,SN,DisplayName,SamAccountName,OfficeName,Description,eMail,StreetAddress,L,PostalCode,CO,UPN,Company,Department,ID,Title,Phone,Manager,Password\n");
+                    for (String line : textArea.getText().split("\\n")) {
+                        line = line.replaceAll("’", "'");
+                        line = line.replaceAll("\\s{2,}", " ").trim();
+
+                        String login = getLogin(line);
+                        String password = getSaltString();
+
+                        if (getGroupName().equals("null")) {
+                            JOptionPane.showMessageDialog(null, "Please enter group name!");
+                            break;
+                        } else {
+                            writer.print(OU + "," + login + "," + getNameFatherName(line) + getLastName(line) + line + "," + login + ",," + getGroupName() + ", " + getEmail(login) + ",,,,," + getSecondEmail(login) + ",,,,,,," + password);
+                            writerLoginPassword.println(line + " Login: " + login + " Password: " + password);
+
                         }
                         writerLoginPassword.close();
                         writer.close();
